@@ -1,0 +1,21 @@
+#helm install prometheus prometheus-community/kube-prometheus-stack --namespace <your-namespace> --create-namespace
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: react-chart-servicemonitor
+  namespace: crd  # Replace with the namespace where your service is deployed
+  labels:
+    release: prometheus
+    app: prometheus
+spec:
+  jobLabel: monitor
+  selector:
+    matchLabels:
+      app: test  # Match the service label
+  # Replace with the namespace where your service is deployed
+  endpoints:
+    - port: metrics        # The port where the metrics are exposed
+      path: /metrics       # The path to scrape metrics
+      interval: 30s        # How often to scrape metrics
+      scrapeTimeout: 10s   # Timeout for scraping metrics
