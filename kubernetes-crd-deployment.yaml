@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-chart
+  namespace: crd
+  labels:    
+    app: react-demo
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "9113"
+    prometheus.io/scrape: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-demo
+  template:
+    metadata:
+      labels:
+        app: react-demo
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9113"
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+      - name: react-demo
+        image: sagarkakkalasworld/react-microk8s:latest
+        ports:
+        - containerPort: 80
+      - name: nginx-exporter
+        image: nginx/nginx-prometheus-exporter:latest
+        args:
+          - -nginx.scrape-uri=http://localhost:80/stub_status
+        ports:
+        - containerPort: 9113
+          name: metrics
+
+# Supporting blog if you wish to learn more: https://sysdig.com/blog/monitor-nginx-prometheus/
